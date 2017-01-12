@@ -50,6 +50,10 @@ public class KeyList extends JPanel {
     }
 
     public void setKeys(List<Key> keys) {
+        if (!this.keys.isEmpty() && !keys.isEmpty() && this.keys.get(0).getSchema().equals(keys.get(0).getSchema())) {
+            return;
+        }
+
         this.keys.clear();
         this.keys.addAll(keys);
         this.filterField.setText("");

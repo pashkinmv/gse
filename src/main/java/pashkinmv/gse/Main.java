@@ -7,6 +7,7 @@ import pashkinmv.gse.components.ValuePanel;
 import javax.swing.JFrame;
 import javax.swing.JSplitPane;
 import javax.swing.WindowConstants;
+import java.util.Collections;
 
 public class Main {
 
@@ -19,7 +20,7 @@ public class Main {
         final JSplitPane splitPane1 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, schemaList, splitPane2);
 
         schemaList.addSchemaSelectListener(schema -> {
-            keyList.setKeys(schema.getKeys());
+            keyList.setKeys(schema == null ? Collections.emptyList() : schema.getKeys());
             valuePanel.setValue(null);
         });
         keyList.addKeySelectListener(key -> valuePanel.setValue(key.getValue()));
