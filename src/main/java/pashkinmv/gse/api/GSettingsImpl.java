@@ -31,7 +31,7 @@ public class GSettingsImpl implements GSettings {
         try {
             final String command = COMMAND_LIST_SCHEMAS;
             LOGGER.info("Execute command: " + command);
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(Runtime.getRuntime().exec(COMMAND_LIST_SCHEMAS).getInputStream()))) {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(Runtime.getRuntime().exec(command).getInputStream()))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     schemas.add(new Schema(line));

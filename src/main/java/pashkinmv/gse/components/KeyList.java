@@ -95,15 +95,50 @@ public class KeyList extends JPanel {
                 selectionModel.setSelectionInterval(0, 0);
             }
         } else if (select == Select.LAST){
-            if (selectionModel.getMinSelectionIndex() == keys.size() - 1) {
-                currentKey = keys.get(keys.size() - 1);
+            final int lastKeyIndex = keys.size() - 1;
+            if (selectionModel.getMinSelectionIndex() == lastKeyIndex) {
+                currentKey = keys.get(lastKeyIndex);
                 fireKeyChanged();
             } else {
-                selectionModel.setSelectionInterval(keys.size() - 1, keys.size() - 1);
+                selectionModel.setSelectionInterval(lastKeyIndex, lastKeyIndex);
             }
         }
 
-        updateKeyListUI();
+        SwingUtilities.invokeLater(() -> {
+            keyList.updateUI();
+
+            if (selectionModel.getMaxSelectionIndex() != -1) {
+                keyList.ensureIndexIsVisible(selectionModel.getMaxSelectionIndex());
+            }
+        });
+    }
+
+    public void setKeysAndSelect(List<Key> keys, Key key) {
+        this.filterField.setText("");
+        this.keys.clear();
+        this.keys.addAll(keys);
+        this.filteredKeys.clear();
+        this.filteredKeys.addAll(keys);
+
+        currentKey = key;
+
+        final int currentSelectionIndex = selectionModel.getMinSelectionIndex();
+        final int newSelectionIndex = keys.indexOf(key);
+
+        if (currentSelectionIndex != newSelectionIndex) {
+            selectionModel.setSelectionInterval(newSelectionIndex, newSelectionIndex);
+            fireKeyChanged();
+        }
+
+        SwingUtilities.invokeLater(() -> {
+            keyList.updateUI();
+
+            if (selectionModel.getMaxSelectionIndex() != -1) {
+                keyList.ensureIndexIsVisible(selectionModel.getMaxSelectionIndex());
+            }
+
+            keyList.requestFocusInWindow();
+        });
     }
 
     public void addKeySelectListener(ActionListener actionListener) {
@@ -185,7 +220,7 @@ public class KeyList extends JPanel {
             clearSelection();
             filterKeys();
             setSelectedKey(selectedKey);
-            updateKeyListUI();
+            SwingUtilities.invokeLater(keyList::updateUI);
 
             ignoreChangingKey = false;
         }
@@ -213,10 +248,6 @@ public class KeyList extends JPanel {
         for (ActionListener actionListener : actionListeners) {
             actionListener.selectPreviousSchema();
         }
-    }
-
-    private void updateKeyListUI() {
-        SwingUtilities.invokeLater(keyList::updateUI);
     }
 
     private void clearSelection() {

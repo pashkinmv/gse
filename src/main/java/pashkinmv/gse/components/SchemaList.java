@@ -80,6 +80,7 @@ public class SchemaList extends JPanel {
         if (currentSelectionIndex < filteredSchemas.size() - 1) {
             selectionModel.setSelectionInterval(newSelectionIndex, newSelectionIndex);
             currentSchema = filteredSchemas.get(newSelectionIndex);
+            schemaList.ensureIndexIsVisible(newSelectionIndex);
         }
 
         ignoreChangingSchema = false;
@@ -96,6 +97,7 @@ public class SchemaList extends JPanel {
         if (currentSelectionIndex > 0) {
             selectionModel.setSelectionInterval(newSelectionIndex, newSelectionIndex);
             currentSchema = filteredSchemas.get(newSelectionIndex);
+            schemaList.ensureIndexIsVisible(newSelectionIndex);
         }
 
         ignoreChangingSchema = false;
@@ -117,6 +119,17 @@ public class SchemaList extends JPanel {
         for (ActionListener actionListener : actionListeners) {
             actionListener.goToKeysRequired(currentSchema);
         }
+    }
+
+    public void selectSchema(Schema schema) {
+        ignoreChangingSchema = true;
+
+        filterField.setText("");
+        filterSchemas();
+        setSelectedSchema(schema);
+        updateSchemaListUI();
+
+        ignoreChangingSchema = false;
     }
 
     public interface ActionListener {
