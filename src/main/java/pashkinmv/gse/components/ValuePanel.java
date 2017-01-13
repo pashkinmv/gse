@@ -76,6 +76,8 @@ public class ValuePanel extends JPanel {
                 return "Double [2.2250738585072014e-308..1.7976931348623157e+308]";
             case "type i":
                 return "Integer [-2147483648..2147483647]";
+            case "type o":
+                return "o";
             case "type s":
                 return "String";
             case "type u":

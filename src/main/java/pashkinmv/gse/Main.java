@@ -3,6 +3,8 @@ package pashkinmv.gse;
 import pashkinmv.gse.components.KeyList;
 import pashkinmv.gse.components.SchemaList;
 import pashkinmv.gse.components.ValuePanel;
+import pashkinmv.gse.model.Key;
+import pashkinmv.gse.model.Schema;
 
 import javax.swing.JFrame;
 import javax.swing.JSplitPane;
@@ -19,11 +21,44 @@ public class Main {
         final JSplitPane splitPane2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, keyList, valuePanel);
         final JSplitPane splitPane1 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, schemaList, splitPane2);
 
-        schemaList.addSchemaSelectListener(schema -> {
-            keyList.setKeys(schema == null ? Collections.emptyList() : schema.getKeys());
-            valuePanel.setValue(null);
+        schemaList.addActionListener(new SchemaList.ActionListener() {
+            @Override
+            public void schemaChanged(Schema schema) {
+                keyList.setKeysAndSelect(schema == null ? Collections.emptyList() : schema.getKeys(), KeyList.Select.FIRST);
+            }
+
+            @Override
+            public void goToKeysRequired(Schema schema) {
+                keyList.startKeyNavigation();
+            }
         });
-        keyList.addKeySelectListener(key -> valuePanel.setValue(key.getValue()));
+        keyList.addKeySelectListener(new KeyList.ActionListener() {
+            @Override
+            public void keyChanged(Key key) {
+                valuePanel.setValue(key == null ? null : key.getValue());
+            }
+
+            @Override
+            public void goToSchemaRequired() {
+                schemaList.startKeyNavigation();
+            }
+
+            @Override
+            public void selectNextSchema() {
+                final Schema newlySelectedSchema = schemaList.selectNextSchema();
+                if (newlySelectedSchema != null) {
+                    keyList.setKeysAndSelect(newlySelectedSchema.getKeys(), KeyList.Select.FIRST);
+                }
+            }
+
+            @Override
+            public void selectPreviousSchema() {
+                final Schema newlySelectedSchema = schemaList.selectPreviousSchema();
+                if (newlySelectedSchema != null) {
+                    keyList.setKeysAndSelect(newlySelectedSchema.getKeys(), KeyList.Select.LAST);
+                }
+            }
+        });
         splitPane1.setOneTouchExpandable(true);
         splitPane1.setDividerLocation(300);
         splitPane2.setOneTouchExpandable(true);

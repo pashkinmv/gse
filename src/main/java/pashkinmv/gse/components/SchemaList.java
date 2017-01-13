@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SchemaList extends JPanel {
-    private final List<SchemaChangeListener> schemaChangeListeners = new ArrayList<>();
+    private final List<ActionListener> actionListeners = new ArrayList<>();
     private final List<Schema> schemas = SchemaManager.getSchemas();
     private final List<Schema> filteredSchemas = new ArrayList<>(schemas);
     private final ListModel<String> model = new FilteredSchemaModel();
@@ -53,6 +53,7 @@ public class SchemaList extends JPanel {
             }
         });
 
+        schemaList.addKeyListener(new SchemaListKeyListener());
         filterField.addKeyListener(new FilterFieldKeyListener());
 
         final JPanel panel = new JPanel(new BorderLayout());
@@ -64,18 +65,61 @@ public class SchemaList extends JPanel {
         add(panel);
     }
 
-    public void addSchemaSelectListener(SchemaChangeListener schemaChangeListener) {
-        schemaChangeListeners.add(schemaChangeListener);
+    public void startKeyNavigation() {
+        schemaList.requestFocus();
+    }
+
+    public Schema selectNextSchema() {
+        ignoreChangingSchema = true;
+
+        final int currentSelectionIndex = selectionModel.getMinSelectionIndex();
+        final int newSelectionIndex = currentSelectionIndex + 1;
+
+        if (currentSelectionIndex < filteredSchemas.size() - 1) {
+            selectionModel.setSelectionInterval(newSelectionIndex, newSelectionIndex);
+            currentSchema = filteredSchemas.get(newSelectionIndex);
+        }
+
+        ignoreChangingSchema = false;
+
+        return currentSchema;
+    }
+
+    public Schema selectPreviousSchema() {
+        ignoreChangingSchema = true;
+
+        final int currentSelectionIndex = selectionModel.getMinSelectionIndex();
+        final int newSelectionIndex = currentSelectionIndex - 1;
+
+        if (currentSelectionIndex > 0) {
+            selectionModel.setSelectionInterval(newSelectionIndex, newSelectionIndex);
+            currentSchema = filteredSchemas.get(newSelectionIndex);
+        }
+
+        ignoreChangingSchema = false;
+
+        return currentSchema;
+    }
+
+    public void addActionListener(ActionListener actionListener) {
+        actionListeners.add(actionListener);
     }
 
     private void fireSchemaChanged() {
-        for (SchemaChangeListener schemaChangeListener : schemaChangeListeners) {
-            schemaChangeListener.schemaChanged(currentSchema);
+        for (ActionListener actionListener : actionListeners) {
+            actionListener.schemaChanged(currentSchema);
         }
     }
 
-    public interface SchemaChangeListener {
+    private void fireGoToKeysRequired() {
+        for (ActionListener actionListener : actionListeners) {
+            actionListener.goToKeysRequired(currentSchema);
+        }
+    }
+
+    public interface ActionListener {
         void schemaChanged(Schema schema);
+        void goToKeysRequired(Schema schema);
     }
 
     private class FilteredSchemaModel implements ListModel<String> {
@@ -100,9 +144,18 @@ public class SchemaList extends JPanel {
         }
     }
 
+    private class SchemaListKeyListener extends KeyAdapter {
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                fireGoToKeysRequired();
+            }
+        }
+    }
+
     private class FilterFieldKeyListener extends KeyAdapter {
         @Override
-        public void keyReleased(KeyEvent e) {
+        public void keyPressed(KeyEvent e) {
             ignoreChangingSchema = true;
 
             final Schema selectedSchema = getSelectedSchema();
