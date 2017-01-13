@@ -1,6 +1,6 @@
 package pashkinmv.gse.components;
 
-import pashkinmv.gse.GSettingsWrapper;
+import pashkinmv.gse.api.GSettingsFactory;
 import pashkinmv.gse.model.Value;
 
 import javax.swing.JButton;
@@ -24,9 +24,9 @@ public class ValuePanel extends JPanel {
     public ValuePanel() {
         super(new BorderLayout());
 
-        saveButton.addActionListener(action -> GSettingsWrapper.set(new Value(value.getKey(), textArea.getText(), value.getRange(), value.getWritable())));
+        saveButton.addActionListener(action -> GSettingsFactory.get().set(new Value(value.getKey(), textArea.getText(), value.getRange(), value.getWritable())));
         resetButton.addActionListener(action -> {
-            final Value newValue = GSettingsWrapper.reset(value.getKey());
+            final Value newValue = GSettingsFactory.get().reset(value.getKey());
 
             textArea.setText(newValue.getValue());
         });

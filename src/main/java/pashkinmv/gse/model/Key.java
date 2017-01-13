@@ -1,7 +1,5 @@
 package pashkinmv.gse.model;
 
-import pashkinmv.gse.GSettingsWrapper;
-
 public class Key {
     private final Schema schema;
     private final String code;
@@ -17,10 +15,6 @@ public class Key {
 
     public String getCode() {
         return code;
-    }
-
-    public Value getValue() {
-        return GSettingsWrapper.get(this);
     }
 
     @Override

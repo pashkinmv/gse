@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class KeyList extends JPanel {
+    private static final String TITLE = "Keys";
+
     private final List<ActionListener> actionListeners = new ArrayList<>();
     private final List<Key> keys = new ArrayList<>();
     private final List<Key> filteredKeys = new ArrayList<>();
@@ -64,7 +66,7 @@ public class KeyList extends JPanel {
         panel.add(filterField, BorderLayout.NORTH);
         panel.add(new JScrollPane(keyList));
 
-        add(new JLabel("Key", JLabel.CENTER), BorderLayout.NORTH);
+        add(new JLabel(TITLE, JLabel.CENTER), BorderLayout.NORTH);
         add(panel);
     }
 

@@ -1,7 +1,7 @@
 package pashkinmv.gse.components;
 
+import pashkinmv.gse.api.GSettingsFactory;
 import pashkinmv.gse.model.Schema;
-import pashkinmv.gse.model.SchemaManager;
 
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -19,8 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SchemaList extends JPanel {
+    private static final String TITLE = "Schemas";
+
     private final List<ActionListener> actionListeners = new ArrayList<>();
-    private final List<Schema> schemas = SchemaManager.getSchemas();
+    private final List<Schema> schemas = GSettingsFactory.get().listSchemas();
     private final List<Schema> filteredSchemas = new ArrayList<>(schemas);
     private final ListModel<String> model = new FilteredSchemaModel();
     private final JList<String> schemaList = new JList<>(model);
@@ -61,7 +63,7 @@ public class SchemaList extends JPanel {
         panel.add(filterField, BorderLayout.NORTH);
         panel.add(new JScrollPane(schemaList));
 
-        add(new JLabel("Schemas", JLabel.CENTER), BorderLayout.NORTH);
+        add(new JLabel(TITLE, JLabel.CENTER), BorderLayout.NORTH);
         add(panel);
     }
 

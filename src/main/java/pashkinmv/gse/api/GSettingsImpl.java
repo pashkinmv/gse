@@ -1,4 +1,4 @@
-package pashkinmv.gse;
+package pashkinmv.gse.api;
 
 import pashkinmv.gse.model.Key;
 import pashkinmv.gse.model.Schema;
@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
-public class GSettingsWrapper {
-    private static final Logger LOGGER = Logger.getLogger(GSettingsWrapper.class.getName());
+public class GSettingsImpl implements GSettings {
+    private static final Logger LOGGER = Logger.getLogger(GSettingsImpl.class.getName());
     private static final String COMMAND_LIST_SCHEMAS = "gsettings list-schemas";
     private static final String COMMAND_LIST_KEYS = "gsettings list-keys %s";
     private static final String COMMAND_GET = "gsettings get %s %s";
@@ -24,7 +24,8 @@ public class GSettingsWrapper {
     private static final String COMMAND_RANGE = "gsettings range %s %s";
     private static final String COMMAND_WRITABLE = "gsettings writable %s %s";
 
-    public static List<Schema> listSchemas() {
+    @Override
+    public List<Schema> listSchemas() {
         final List<Schema> schemas = new ArrayList<>();
 
         try {
@@ -45,7 +46,8 @@ public class GSettingsWrapper {
         return schemas;
     }
 
-    public static List<Key> listKeys(Schema schema) {
+    @Override
+    public List<Key> listKeys(Schema schema) {
         final List<Key> keys = new ArrayList<>();
 
         try {
@@ -66,7 +68,8 @@ public class GSettingsWrapper {
         return keys;
     }
 
-    public static Value get(Key key) {
+    @Override
+    public Value get(Key key) {
         try {
             final StringBuilder value = new StringBuilder();
 
@@ -89,7 +92,8 @@ public class GSettingsWrapper {
         }
     }
 
-    public static void set(Value value) {
+    @Override
+    public void set(Value value) {
         try {
             final String command = String.format(COMMAND_SET, value.getKey().getSchema().getCode(), value.getKey().getCode(), value.getValue());
             LOGGER.info("Execute command: " + command);
@@ -100,7 +104,8 @@ public class GSettingsWrapper {
         }
     }
 
-    public static Value reset(Key key) {
+    @Override
+    public Value reset(Key key) {
         try {
             final String command = String.format(COMMAND_MONITOR, key.getSchema().getCode());
             LOGGER.info("Execute command: " + command);
@@ -126,7 +131,7 @@ public class GSettingsWrapper {
         throw new RuntimeException("Unexpected exception");
     }
 
-    private static void doReset(Key key) {
+    private void doReset(Key key) {
         try {
             final String command = String.format(COMMAND_RESET, key.getSchema().getCode(), key.getCode());
             LOGGER.info("Execute command: " + command);
@@ -137,7 +142,7 @@ public class GSettingsWrapper {
         }
     }
 
-    private static String range(Key key) {
+    private String range(Key key) {
         try {
             final String command = String.format(COMMAND_RANGE, key.getSchema().getCode(), key.getCode());
             LOGGER.info("Execute command: " + command);
@@ -152,7 +157,7 @@ public class GSettingsWrapper {
         }
     }
 
-    private static boolean writable(Key key) {
+    private boolean writable(Key key) {
         try {
             final String command = String.format(COMMAND_WRITABLE, key.getSchema().getCode(), key.getCode());
             LOGGER.info("Execute command: " + command);
